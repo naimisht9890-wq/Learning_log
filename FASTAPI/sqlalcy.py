@@ -20,7 +20,7 @@ class Todo(Base):
 
     id = Column(Integer,primary_key=True,index=True)
     title= Column(String)
-    completed=Column(String)
+    complete=Column(String)
 
 Base.metadata.create_all(bind=engine)
 
@@ -35,5 +35,16 @@ def get_db():
 def home(db: Session=Depends(get_db)):
     return{
         "message":"DB_connected fine"
+    }
+
+@app.post("/todos")
+def create_todo(title:str,db:Session=Depends(get_db)):
+    todo=Todo(title=title,complete="False")
+    db.add(todo)
+    db.commit()
+    db.refresh(todo)
+    return{
+        "message":"Todo Created",
+        "data":todo
     }
 

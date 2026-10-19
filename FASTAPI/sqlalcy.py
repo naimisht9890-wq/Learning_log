@@ -58,6 +58,7 @@ def get_todos(db:Session=Depends(get_db)):
         "data":todos
     }
 
+# read data based on id
 @app.get("/todos/{todo_id}")
 def get_todo(todo_id:int,db:Session=Depends(get_db)):
     todo=db.query(Todo).filter(Todo.id == todo_id).first()
@@ -65,3 +66,19 @@ def get_todo(todo_id:int,db:Session=Depends(get_db)):
     if not todo:
         raise HTTPException(status_code=404,detail="todo not found")
     return todo
+
+#update
+@app.put("/todos/{todo_id}")
+def update_todo(todo_id:int,title:str,db:Session=Depends(get_db)):
+    todo=db.query(Todo).filter(Todo.id==todo_id).first()
+
+    if not todo:
+            raise HTTPException(status_code=404,detail="todo not found")
+
+    todo.title=title
+    db.commit()
+
+    return{
+        "message":"Todo Updated",
+        "data":todo
+    }
